@@ -2,7 +2,6 @@
 
 import sys
 import os
-import twitter
 import tweepy
 import json
 import codecs
@@ -21,12 +20,10 @@ import codecs
 
 
 
-def web_trap(word, path, API):
+def web_trap(word, path, statuses):
 
-	text_file = codecs.open(path + keyword + '.txt', 'w', encoding='utf-8')
-	json_file = open(path + keyword + '.json', 'w')
-
-	statuses = API.search(keyword)['statuses']
+	text_file = codecs.open(path + word + '.txt', 'w', encoding='utf-8')
+	json_file = open(path + word + '.json', 'w')
 	
 	for status in statuses:
 
@@ -47,10 +44,12 @@ def main():
 	auth.set_access_token(AccessToken['Access Token'], AccessToken['Access Token Secret'])
 	twitter_api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
+	
+
 	# opens and reads the list of keywords
 
 	keyword_file = sys.argv[1]
-	keywords = open(keyword_file, 'r').read().split('\n')
+	keywords = open(keyword_file, 'r').read().split('\n').pop()
 
 	outfile_path = sys.argv[2]
 
@@ -58,7 +57,8 @@ def main():
 
 	for keyword in keywords:
 
-		web_trap(keyword, outfile_path, twitter.api)
+	        status_list = twitter_api.search(keyword, rpp=100)['statuses']
+		web_trap(keyword, outfile_path, status_list)
 
 
 
