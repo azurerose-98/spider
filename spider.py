@@ -24,8 +24,8 @@ import time
 
 def web_trap(word, path, statuses, check_set):
 
-	text_file = codecs.open(path + word + '.txt', 'w', encoding='utf-8')
-	json_file = open(path + word + '.json', 'w')
+	text_file = codecs.open(path + word + '.txt', 'a', encoding='utf-8')
+	json_file = open(path + word + '.json', 'a')
 
 	reference = copy.deepcopy(check_set)	
 	return_texts = set([])
@@ -38,8 +38,9 @@ def web_trap(word, path, statuses, check_set):
 		text = ''.join(unicode(status['text']).splitlines()).replace('\t', ' ').replace('\n', ' ')
 
 		if text not in reference:
-
-			json_obj = json.dump(status, json_file)
+	    
+			json_obj = json.dumps(dict(copy.deepcopy(status)), encoding='utf-8')
+			json_file.write(json_obj)
 			text_file.write(text + '\n')
 			return_texts.add(text)
 			reference.add(text)
@@ -85,6 +86,11 @@ def main():
 
 	for keyword in keywords:
 
+		text_file = codecs.open(outfile_path + keyword + '.txt', 'w', encoding='utf-8')
+		json_file = open(outfile_path + keyword + '.json', 'w')
+		text_file.close()
+		json_file.close()
+
 		POSTCOUNT = 0
 		YEAR = 2017
 		MONTH = 6
@@ -122,14 +128,17 @@ def main():
 			else:
 				pass
 				
-			if MONTH == 1:
-				MONTH = 12
+			if DAY < 6:
+				if MONTH == 1:
+					MONTH = 12
+				else:
+					MONTH -= 1
 			else:
-				MONTH -= 1
-			if DAY == 1:
+				pass
+			if DAY < 6:
 				DAY = 28
 			else:
-				DAY -= 1
+				DAY -= 5
 
 
 
